@@ -2,9 +2,12 @@ import datetime
 import pandas
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from pprint import pprint
+from collections import defaultdict
 
 def company_age():
     return datetime.date.today().year - 1920
+
 
 def age_format(years):
     if 11 <= years % 100 <= 19:
@@ -16,11 +19,22 @@ def age_format(years):
     else:
         return f"{years} лет"
 
+
 def main():
     age = company_age()
-    wine_catalog = pandas.read_excel('wine.xlsx')
-    wine_catalog.columns = ['title', 'sort', 'price', 'image']
+    wine_catalog = pandas.read_excel(io='wine2.xlsx', na_values='nan', keep_default_na=False)
     wines = wine_catalog.to_dict('records')
+    wine_cat = defaultdict(list)  
+    for wine in wines:
+        category = wine['Категория']
+        wine_cat[category].append({
+            'Название': wine['Название'],
+            'Сорт': wine['Сорт'],
+            'Цена': wine['Цена'],
+            'Картинка': wine['Картинка']
+        })
+    
+    pprint(wine_cat)
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
@@ -30,6 +44,7 @@ def main():
     
     rendered_page = template.render(
         wines=wines,
+        wine_categories=dict(wine_cat),
         years_old=age_format(age)
     )
     
