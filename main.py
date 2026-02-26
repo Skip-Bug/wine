@@ -1,4 +1,5 @@
 import datetime
+import pandas
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -17,6 +18,9 @@ def age_format(years):
 
 def main():
     age = company_age()
+    wine_catalog = pandas.read_excel('wine.xlsx')
+    wine_catalog.columns = ['title', 'sort', 'price', 'image']
+    wines = wine_catalog.to_dict('records')
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
@@ -25,6 +29,7 @@ def main():
     template = env.get_template('template.html')
     
     rendered_page = template.render(
+        wines=wines,
         years_old=age_format(age)
     )
     
@@ -34,5 +39,4 @@ def main():
 if __name__ == "__main__":
     main()
     server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-    print("Server started on http://0.0.0.0:8000")
     server.serve_forever()
