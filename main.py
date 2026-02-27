@@ -26,14 +26,12 @@ def main():
     wines = wine_catalog.to_dict('records')
     wine_cat = defaultdict(list)  
     for wine in wines:
-        category = wine['Категория']
-        wine_cat[category].append({
-            'Название': wine['Название'],
-            'Сорт': wine['Сорт'],
-            'Цена': wine['Цена'],
-            'Картинка': wine['Картинка']
-        })
-    
+        category = wine.get('Категория')  
+        wine_cat[category].append(wine)
+    for category in wine_cat:
+        wine_cat[category].sort(key=lambda x: x.get('Цена', 0))
+    pprint(dict(wine_cat))
+    print("Смотрим разницу")
     pprint(wine_cat)
     env = Environment(
         loader=FileSystemLoader('.'),
@@ -43,8 +41,7 @@ def main():
     template = env.get_template('template.html')
     
     rendered_page = template.render(
-        wines=wines,
-        wine_categories=dict(wine_cat),
+        wine_cat=dict(wine_cat),
         years_old=age_format(age)
     )
     
