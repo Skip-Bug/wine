@@ -114,32 +114,37 @@
           </div>
         </div>
         <div class="row">
-        {% for wine in wines %}  
-          <div class="col-lg-4 mb-5 col-md-6">
-            <div class="wine_v_1 text-center pb-4 pt-5">
-              {% if wine.Картинка %}
-                  <img src="images/{{wine.Картинка}}" alt="Image" class="img-fluid">
-              {% else %}
-                  <img src="https://dvmn.org/filer/canonical/1569944855/354/" class="card-img-top" alt="...">
-              {% endif %}
-              <div>
-                <h3 class="heading mt-3 mb-3 text-dark">{{wine.Название}}</h3>
-                <p>
-                  Сорт винограда - {{wine.Сорт}}<br/>
-                  <span class="price">{{wine.Цена}} р.</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-               </p>
-              </div>
-            </div>
+    
+      {% for category, category_wines in wine_cat.items() %}
+        <div class="container">
+        <div class="row">
+          <div class="col-12 section-title text-center mb-5">
+            <h2 class="d-block">{{ category }}</h2>
           </div>
         </div>
+        <div class="row">
+          {% for wine in category_wines %}  
+            <div class="col-lg-4 mb-5 col-md-6">
+              <div class="wine_v_1 text-center pb-4 pt-5">
+                {% if wine.Картинка %}
+                    <img src="images/{{ wine.Картинка }}" alt="Image" class="img-fluid">
+                {% else %}
+                    <img src="https://dvmn.org/filer/canonical/1569944855/354/" class="card-img-top" alt="...">
+                {% endif %}
+                <div>
+                  <h3 class="heading mt-3 mb-3 text-dark">{{ wine.Название }}</h3>
+                  <p>
+                    Сорт винограда - {{ wine.Сорт }}<br/>
+                    <span class="price">{{ wine.Цена }} р.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
       </div>
     </div>
-
     <div class="hero-2" style="background-image: url('assets/hero_2.jpg');">
     <div><a id="feedback"></a></div>
      <div class="container">
