@@ -22,26 +22,24 @@ def age_format(years):
 
 def main():
     age = company_age()
-    wine_catalog = pandas.read_excel(io='wine2.xlsx', na_values='nan', keep_default_na=False)
+    wine_catalog = pandas.read_excel(io='wine3.xlsx', na_values='nan', keep_default_na=False)
     wines = wine_catalog.to_dict('records')
+    
     wine_cat = defaultdict(list)  
     for wine in wines:
         category = wine.get('Категория')  
         wine_cat[category].append(wine)
     for category in wine_cat:
         wine_cat[category].sort(key=lambda x: x.get('Цена', 0))
-    pprint(dict(wine_cat))
-    print("Смотрим разницу")
-    pprint(wine_cat)
+
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
     )
     
     template = env.get_template('template.html')
-    
     rendered_page = template.render(
-        wine_cat=dict(wine_cat),
+        wine_cat=wine_cat,
         years_old=age_format(age)
     )
     
