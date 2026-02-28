@@ -1,5 +1,7 @@
 import datetime
 import pandas
+import sys
+import argparse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from collections import defaultdict
@@ -20,13 +22,29 @@ def format_age(years):
         return f"{years} лет"
 
 
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description='Создаем сайт по шаблону'
+    )
+    parser.add_argument("-w", "--wine", help="таблица вин", default='wine3.xlsx')
+    return parser
+
+
 def main():
     age = get_age_company()
-    wine_catalog = pandas.read_excel(
-        io='wine3.xlsx',
-        na_values='nan',
-        keep_default_na=False
-    )
+    parser = create_parser()
+    namespace = parser.parse_args(sys.argv[1:])
+    try:
+        wine_catalog = pandas.read_excel(
+            io=namespace.wine,
+            na_values='nan',
+            keep_default_na=False
+        )
+    except FileNotFoundError:
+        print(f"""Ошибка: Файл '{namespace.wine}' не найден!
+        попробуйте указать полный путь до файла
+        или перенести фаил в папку с программой""")
+        sys.exit(1)
     wines = wine_catalog.to_dict('records')
 
     wine_cat = defaultdict(list)
