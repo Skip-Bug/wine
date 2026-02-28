@@ -5,11 +5,11 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from collections import defaultdict
 
 
-def company_age():
+def get_age_company():
     return datetime.date.today().year - 1920
 
 
-def age_format(years):
+def format_age(years):
     if 11 <= years % 100 <= 19:
         return f"{years} лет"
     elif years % 10 == 1:
@@ -21,7 +21,7 @@ def age_format(years):
 
 
 def main():
-    age = company_age()
+    age = get_age_company()
     wine_catalog = pandas.read_excel(
         io='wine3.xlsx',
         na_values='nan',
@@ -44,7 +44,7 @@ def main():
     template = env.get_template('template.html')
     rendered_page = template.render(
         wine_cat=wine_cat,
-        years_old=age_format(age)
+        years_old=format_age(age)
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
