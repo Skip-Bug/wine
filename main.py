@@ -8,10 +8,6 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from collections import defaultdict
 
 
-def get_company_age():
-    return datetime.date.today().year - 1920
-
-
 def format_age(years):
     if 11 <= years % 100 <= 19:
         return f"{years} лет"
@@ -28,14 +24,13 @@ def create_parser():
     )
     parser.add_argument(
         "-w", "--wine",
-        help="таблица вин",
-        default='wine3.xlsx'
+        help="таблица вин"
     )
     return parser
 
 
 def main():
-    age = get_company_age()
+    age = datetime.date.today().year - 1920
     parser = create_parser()
     namespace = parser.parse_args(sys.argv[1:])
 
@@ -43,8 +38,8 @@ def main():
         namespace.wine
         or os.getenv('WINE_CATALOG')
         or 'wine3.xlsx'
-    )
-
+        )
+    print(f"Использую файл: {wine_file}")
     try:
         wine_catalog = pandas.read_excel(
             io=wine_file,
@@ -52,7 +47,7 @@ def main():
             keep_default_na=False
         )
     except FileNotFoundError:
-        print(f""""Ошибка: Файл '{wine_file}' не найден!
+        print(f"""Ошибка: Файл '{wine_file}' не найден!
         Укажите полный путь или проверьте файл""")
         sys.exit(1)
 
@@ -81,9 +76,9 @@ def main():
 
     with open('index.html', 'w', encoding='utf8') as file:
         file.write(rendered_page)
-
+    server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+    print("Что бы остановить работу программы нажмите Ctrl + C")
+    server.serve_forever()
 
 if __name__ == "__main__":
     main()
-    server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-    server.serve_forever()
